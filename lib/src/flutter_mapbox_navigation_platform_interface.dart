@@ -27,6 +27,11 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
   }
 
   ///Current Device OS Version
+  Future<String?> showPopup(String title, String description) {
+    throw UnimplementedError('showPopup() has not been implemented.');
+  }
+
+  ///Current Device OS Version
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }

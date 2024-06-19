@@ -120,6 +120,17 @@ class MapBoxNavigationViewController {
     return _methodChannel.invokeMethod('startNavigation', args);
   }
 
+  /// Starts the Navigation
+  Future<bool?> showPopup(String title, String description) async {
+    // Map<String, dynamic>? args;
+    // if (options != null) args = options.toMap();
+    //_routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+    var args = <String, dynamic>{};
+    args['title'] = title;
+    args['description'] = description;
+    return _methodChannel.invokeMethod('showPopup', args);
+  }
+
   ///Ends Navigation and Closes the Navigation View
   Future<bool?> finishNavigation() async {
     final success = await _methodChannel.invokeMethod('finishNavigation', null);

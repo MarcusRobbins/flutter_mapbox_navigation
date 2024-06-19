@@ -24,6 +24,16 @@ class MethodChannelFlutterMapboxNavigation
   late ValueSetter<RouteEvent>? _onRouteEvent;
 
   @override
+  Future<String?> showPopup(String title, String description) async {
+    final args = <String, dynamic>{};
+    args['title'] = title;
+    args['description'] = description;
+    final version =
+        await methodChannel.invokeMethod<String>('showPopup', args);
+    return version;
+  }
+
+  @override
   Future<String?> getPlatformVersion() async {
     final version =
         await methodChannel.invokeMethod<String>('getPlatformVersion');

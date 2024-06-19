@@ -55,6 +55,11 @@ public class FlutterMapboxNavigationPlugin: NavigationFactory, FlutterPlugin {
         {
             downloadOfflineRoute(arguments: arguments, flutterResult: result)
         }
+        else if(call.method == "showPopup")
+        {
+            let userInfo = ["title": arguments?["title"], "description": arguments?["description"]]
+            NotificationCenter.default.post(name: Notification.Name("showPopup"), object: nil, userInfo: userInfo)
+        }
         else
         {
             result("Method is Not Implemented");

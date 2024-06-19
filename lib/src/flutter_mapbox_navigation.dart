@@ -42,6 +42,11 @@ class MapBoxNavigation {
   }
 
   ///Current Device OS Version
+  Future<String?> showPopup(String title, String description) {
+    return FlutterMapboxNavigationPlatform.instance.showPopup(title, description);
+  }
+
+  ///Current Device OS Version
   Future<String?> getPlatformVersion() {
     return FlutterMapboxNavigationPlatform.instance.getPlatformVersion();
   }
