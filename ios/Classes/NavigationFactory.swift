@@ -105,7 +105,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             }
             else
             {
-                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: false)
+                startNavigationWithWayPoints_weird(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: false)
             }
             
         }
@@ -164,6 +164,58 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         }
         
     }
+    
+    func startNavigationWithWayPoints_weird(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult, isUpdatingWaypoints: Bool) {
+        
+        wayPoints.forEach { waypoint in
+            waypoint.separatesLegs = false
+        }
+        
+        let simulationMode: SimulationMode = _simulateRoute ? .always : .never
+        setNavigationOptions(wayPoints: wayPoints)
+
+        Directions.shared.calculate(self._options!) { (matchSession, matchResult) in
+                    switch matchResult {
+                    case .failure(let error):
+                        flutterResult("Failed to calculate matching routes: \(error.localizedDescription)")
+
+                    case .success(let matchedResponse):
+                        if let matchedRoutes = matchedResponse.routes, !matchedRoutes.isEmpty {
+                            if matchedRoutes.count > 1 && self.ALLOW_ROUTE_SELECTION {
+                                
+                            } else {
+                                let navigationService = MapboxNavigationService(routeResponse: matchedResponse, routeIndex: 0, routeOptions: self._options!, simulating: simulationMode)
+                                var dayStyle = CustomDayStyle()
+                                if(self._mapStyleUrlDay != nil){
+                                    dayStyle = CustomDayStyle(url: self._mapStyleUrlDay)
+                                }
+                                let nightStyle = CustomNightStyle()
+                                if(self._mapStyleUrlNight != nil){
+                                    nightStyle.mapStyleURL = URL(string: self._mapStyleUrlNight!)!
+                                }
+                                let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+                                if (isUpdatingWaypoints) {
+                                    self._navigationViewController?.navigationService.router.updateRoute(with: IndexedRouteResponse(routeResponse: matchedResponse, routeIndex: 0), routeOptions: matchSession.options as! RouteOptions) { success in
+                                        if (success) {
+                                            flutterResult("true")
+                                        } else {
+                                            flutterResult("failed to add stop")
+                                        }
+                                    }
+                                }
+                                else {
+                                    self.startNavigation(routeResponse: matchedResponse, options: self._options!, navOptions: navigationOptions)
+                                }
+                            }
+                        } else {
+                            flutterResult("No matched routes available")
+                        }
+                    }
+                }
+            }
+//        }
+//    }
+
     
     func startNavigation(routeResponse: RouteResponse, options: NavigationRouteOptions, navOptions: NavigationOptions)
     {
